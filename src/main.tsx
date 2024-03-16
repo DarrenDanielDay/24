@@ -37,13 +37,17 @@ const renderNumber = (n: number): JSX.Element => {
 
 const wrappedRender = (
   e: Expression | number,
-  parentOp: Operator
+  parentOp: Operator,
+  isRightExpr?: boolean
 ): JSX.Element => {
   if (typeof e === "number") {
     return renderNumber(e);
   }
   const op = e.operator;
-  if ((op === "add" || op === "sub" || op === "lsub") && parentOp === "mult") {
+  if (
+    ((op === "add" || op === "sub" || op === "lsub") && parentOp === "mult") ||
+    (isRightExpr && (parentOp === "sub" || parentOp === "lsub"))
+  ) {
     return (
       <>
         <mo fence>(</mo>
@@ -63,7 +67,7 @@ const renderAB = (
     return (
       <mfrac>
         {wrappedRender(a, op)}
-        {wrappedRender(b, op)}
+        {wrappedRender(b, op, true)}
       </mfrac>
     );
   }
@@ -71,7 +75,7 @@ const renderAB = (
     <>
       {wrappedRender(a, op)}
       <mo>{OperatorNames[op]}</mo>
-      {wrappedRender(b, op)}
+      {wrappedRender(b, op, true)}
     </>
   );
 };
